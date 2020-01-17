@@ -1,0 +1,11 @@
+[color]
+  ui = auto
+[alias]
+  co = checkout
+  ci = commit
+  st = status
+  bra = branch
+  gr = log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+[user]
+  name = yyamada12
+  email = 12yacropolisy@gmail.com
