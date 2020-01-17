@@ -128,3 +128,4 @@ alias gf='git fetch'
 alias gci='git commit'
 
 alias deploy='/home/isucon/isubata/webapp/go/scripts/deploy.sh'
+alias alpc='alp ltsv -c /home/isucon/alp.yml'
