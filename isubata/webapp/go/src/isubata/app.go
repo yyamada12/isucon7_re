@@ -716,13 +716,25 @@ func postProfile(c echo.Context) error {
 func getIcon(c echo.Context) error {
 	var name string
 	var data []byte
+	filename := c.Param("file_name")
 	err := db.QueryRow("SELECT name, data FROM image WHERE name = ?",
-		c.Param("file_name")).Scan(&name, &data)
+		filename).Scan(&name, &data)
 	if err == sql.ErrNoRows {
 		return echo.ErrNotFound
 	}
 	if err != nil {
 		return err
+	}
+
+	file, err := os.Create("../public/icons/" + filename)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	_, err = file.Write(data)
+	if err != nil {
+		panic(err)
 	}
 
 	mime := ""

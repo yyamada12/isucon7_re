@@ -17,3 +17,7 @@ isubata/webapp/php
 isubata/webapp/python
 isubata/webapp/ruby
 vendor
+github.com
+golang.org
+isubata/webapp/go/bin/
+isubata/webapp/public/icons
