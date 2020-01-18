@@ -436,6 +436,35 @@ func queryHaveRead(userID, chID int64) (int64, error) {
 	return h.MessageID, nil
 }
 
+func queryHaveReads(userID int64, chIDs []int64) (map[int64]int64, error) {
+	type HaveRead struct {
+		UserID    int64     `db:"user_id"`
+		ChannelID int64     `db:"channel_id"`
+		MessageID int64     `db:"message_id"`
+		UpdatedAt time.Time `db:"updated_at"`
+		CreatedAt time.Time `db:"created_at"`
+	}
+	var hrs []HaveRead
+	qs, args, _ := sqlx.In("SELECT * FROM haveread WHERE user_id = ? AND channel_id IN (?)", userID, chIDs)
+
+	res := make(map[int64]int64)
+
+	for _, chID := range chIDs {
+		res[chID] = 0
+	}
+
+	err := db.Select(&hrs, qs, args...)
+	if err != nil {
+		return res, err
+	}
+
+	for _, hr := range hrs {
+		res[hr.ChannelID] = hr.MessageID
+	}
+
+	return res, nil
+}
+
 func fetchUnread(c echo.Context) error {
 	userID := sessUserID(c)
 	if userID == 0 {
@@ -449,11 +478,13 @@ func fetchUnread(c echo.Context) error {
 		return err
 	}
 
+	lastIds, err := queryHaveReads(userID, channels)
+
 	resp := []map[string]interface{}{}
 
 	for _, chID := range channels {
-		lastID, err := queryHaveRead(userID, chID)
-		if err != nil {
+		lastID, ok := lastIds[chID]
+		if !ok {
 			return err
 		}
 
